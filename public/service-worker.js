@@ -56,7 +56,7 @@ self.addEventListener('install', (evt) => {
         return cache.addAll(FILES_TO_CACHE);
       }).then(
           caches.open('V1').then((cache)=>{
-            return cache.addAll(['/','/index.html','/scripts/app.js', '/styles/inline.css']).then(
+            return cache.addAll(['/','/scripts/app.js', '/styles/inline.css']).then(
                 (event)=>{ evt.waitUntil(event)}
             );
           })

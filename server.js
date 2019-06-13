@@ -29,6 +29,8 @@ const FORECAST_DELAY = 0;
 const API_KEY = process.env.DARKSKY_API_KEY;
 const BASE_URL = `https://api.darksky.net/forecast`;
 
+
+
 // Fake forecast data used if we can't reach the Dark Sky API
 const fakeForecast = {
   fakeData: true,
@@ -113,6 +115,20 @@ const fakeForecast = {
     ],
   },
 };
+
+const ouibus = require('ouibus');
+const OUIBUS_API_KEY = "Token 4-SSgAE5flA_cP8pVY6oUA";
+const OUIBUS_BASE_URL = "https://api.idbus.com/v1";
+const url = `${OUIBUS_BASE_URL}/stops`;
+//console.log(url);
+
+fetch(url,{ method: 'get',
+  headers: {'Authorization': OUIBUS_API_KEY}
+}).then((resp) => {
+  console.log(resp.json());
+}).catch((err) => {
+  console.error('OUIBUS API Error:', err.message);
+});
 
 /**
  * Generates a fake forecast in case the weather API is not available.
