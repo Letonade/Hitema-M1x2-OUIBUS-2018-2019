@@ -155,17 +155,19 @@ function generateFakeForecast(location) {
  * @param {Response} resp response object from Express.
  */
 function getForecast(req, resp) {
-  const location = req.params.location || '40.7720232,-73.9732319';
-  const url = `${BASE_URL}/${API_KEY}/${location}`;
-  fetch(url).then((resp) => {
-    return resp.json();
-  }).then((data) => {
-    setTimeout(() => {
-      resp.json(data);
-    }, FORECAST_DELAY);
+  const params = new URLSearchParams();
+  params.append('origin_id', 1);
+  params.append('destination_id', 5);
+  params.append('date', "2019-09-01");
+
+  fetch(url,{ method: 'post',
+    headers: {'Authorization': OUIBUS_API_KEY},
+    body: params
+  }).then((resp) => {
+    console.log("resp.json(): ");
+    console.log(resp.json());
   }).catch((err) => {
-    console.error('Dark Sky API Error:', err.message);
-    resp.json(generateFakeForecast(location));
+    console.error('OUIBUS API Error:', err.message);
   });
 }
 

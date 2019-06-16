@@ -42,26 +42,58 @@
   <meta name="description" content="A sample weather app">
   <!-- CODELAB: Add meta theme-color -->
   <meta name="theme-color" content="#2F3BA2" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    #map{
+      height:400px;
+    }
+
+    #locate-position{
+      position:absolute;
+      top:140px;
+      left:25px;
+      -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+      -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+      box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+    }
+  </style>
 
 </head>
 <body>
 
-  <div id="main-map">
-    <div id="map"></div>
+<div class="uk-container uk-margin-top">
+  <div class="uk-grid">
+    <div class="uk-width-1-1">
+      <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-panel-header">
+        <h3 class="uk-panel-title">Leaflet Geolocation Simple</h3>
+        <div id="map"></div>
+        <button id="locate-position" class="uk-button uk-button-success">x</button>
+
+        <button class="uk-button" data-uk-modal="{target:'#nodal'}">Show modal</button>
+        <!-- This is the modal -->
+        <div id="modal" class="uk-modal">
+          <div class="uk-modal-dialog">
+            <a class="uk-modal-close uk-close"></a>
+            Modal Title
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
+</div>
 
-  <script>
-    function maPosition(position) {
-      var infopos = "Position déterminée :\n";
-      infopos += "Latitude : "+position.coords.latitude +"\n";
-      infopos += "Longitude: "+position.coords.longitude+"\n";
-      infopos += "Altitude : "+position.coords.altitude +"\n";
-    //  document.getElementById("infoposition").innerHTML = infopos;
-    }
-
-    if(navigator.geolocation)
-      navigator.geolocation.getCurrentPosition(maPosition);
-  </script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+          integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+          crossorigin=""></script>
 
   <script src="/scripts/app.js"></script>
   <!-- CODELAB: Add the install script here -->
@@ -77,115 +109,47 @@
       });
     }
   </script>
-  <script src="https://apis.google.com/js/api.js"></script>
   <script>
-    function start() {
-      // 2. Initialize the JavaScript client library.
-      gapi.client.init({
-        'apiKey': 'AIzaSyBiTJkGjm3TpbQcvEfBuCzWg1iIPQ5GOyM',
-        // clientId and scope are optional if auth is not required.
-        'clientId': '951321888559-4d55epa4gbp8h16044e3jvd6gs3lnkbi.apps.googleusercontent.com',
-        'scope': 'profile',
-      }).then(function() {
-        // 3. Initialize and make the API request.
-        return gapi.client.request({
-          'path': 'https://people.googleapis.com/v1/people/me?requestMask.includeField=person.names',
-        })
-      }).then(function(response) {
-        console.log(response.result);
-      }, function(reason) {
-        //console.log(reason);
-        console.log('Error: ' + reason.details);
-      });
-    };
-    // 1. Load the JavaScript client library.
-    gapi.load('client', start);
-  </script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-  <script>
+    var map = L.map('map', {
+      center: [[40.775,-73.972]],
+      scrollWheelZoom: false,
+      inertia: true,
+      inertiaDeceleration: 2000
+    });
+    map.setView([40.775,-73.972], 15);
 
-    function initMap() {
-      // Position par défaut
-      var centerpos = new google.maps.LatLng(48.579400,7.7519);
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>',
+      maxZoom: 15,
+      id: 'superpikar.n28afi10',
+      accessToken: 'pk.eyJ1IjoiZGFya2FiIiwiYSI6ImNqd3VueXl3dzAyYW00OXBuaXQ5bGZ2MzkifQ.AZUSWLccliPlhNMClrwW5w'
+    }).addTo(map);
 
-      // Ansi que des options pour la carte, centrée sur latlng
-      var optionsGmaps = {
-        center:centerpos,
-        navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL},
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        zoom: 15
-      };
 
-      map = new google.maps.Map(document.getElementById('map'), optionsGmaps);
-    }
-  </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBiTJkGjm3TpbQcvEfBuCzWg1iIPQ5GOyM&callback=initMap"
-          ></script>
-  <script type="text/javascript" charset="UTF-8" src="https://maps.google.com/maps-api-v3/api/js/37/3/common.js"></script>
-  <script type="text/javascript" charset="UTF-8" src="https://maps.google.com/maps-api-v3/api/js/37/3/util.js"></script>
-  <script type="text/javascript" charset="UTF-8" src="https://maps.google.com/maps-api-v3/api/js/37/3/map.js"></script>
-  <script type="text/javascript" charset="UTF-8" src="https://maps.google.com/maps-api-v3/api/js/37/3/onion.js"></script>
-  <script type="text/javascript" charset="UTF-8" src="https://maps.google.com/maps-api-v3/api/js/37/3/controls.js"></script>
-    <script>
 
-    // Initialisation de la carte avec les options
-    //var map = new google.maps.Map(document.getElementById("map"), optionsGmaps);
+    $(document).ready(function() {
+              map.locate({setView: true, maxZoom: 15});
+            }
+    );
 
-      // Fonction de callback en cas de succès
-      function affichePosition(position) {
-
-        var infopos = "Position déterminée : <br>";
-        infopos += "Latitude : "+position.coords.latitude +"<br>";
-        infopos += "Longitude: "+position.coords.longitude+"<br>";
-        infopos += "Altitude : "+position.coords.altitude +"<br>";
-        //   document.getElementById("maposition").innerHTML = infopos;
-
-        // On instancie un nouvel objet LatLng pour Google Maps
-        var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-        // Ajout d'un marqueur à la position trouvée
-        var marker = new google.maps.Marker({
-          position: latlng,
-          map: map,
-          title:"Vous êtes ici"
-        });
-
-        map.panTo(latlng);
-
-      }
-      // Fonction de callback en cas d’erreur
-      function erreurPosition(error) {
-        console.log(error);
-        alert("err");
-        var info = "Erreur lors de la géolocalisation : ";
-        switch(error.code) {
-          case error.TIMEOUT:
-            info += "Timeout !";
-            break;
-          case error.PERMISSION_DENIED:
-            info += "Vous n’avez pas donné la permission";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            info += "La position n’a pu être déterminée";
-            break;
-          case error.UNKNOWN_ERROR:
-            info += "Erreur inconnue";
-            break;
-        }
-        document.getElementById("maposition").innerHTML = info;
-      }
-
-    if(navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(affichePosition,erreurPosition);
-
-    } else {
-
-      alert("Ce navigateur ne supporte pas la géolocalisation");
-
+    function onLocationFound(e) {
+      var radius = e.accuracy / 2;
+      L.marker(e.latlng).addTo(map)
+              .on('click', function(){
+                confirm("are you sure?");
+              });
+      //.bindPopup("You are within " + radius + " meters from this point").openPopup();
+      L.circle(e.latlng, radius).addTo(map);
     }
 
+    map.on('locationfound', onLocationFound);
 
+    function onLocationError(e) {
+      alert(e.message);
+    }
+    map.on('locationerror', onLocationError);
   </script>
+
 
 
 
