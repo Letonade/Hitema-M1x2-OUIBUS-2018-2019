@@ -155,16 +155,9 @@ function generateFakeForecast(location) {
  * @param {Response} resp response object from Express.
  */
 function getForecast(req, resp) {
-  const params = new URLSearchParams();
-  params.append('origin_id', 1);
-  params.append('destination_id', 5);
-  params.append('date', "2019-09-01");
-
-  fetch(url,{ method: 'post',
-    headers: {'Authorization': OUIBUS_API_KEY},
-    body: params
+  fetch(url,{ method: 'get',
+    headers: {'Authorization': OUIBUS_API_KEY}
   }).then((resp) => {
-    console.log("resp.json(): ");
     console.log(resp.json());
   }).catch((err) => {
     console.error('OUIBUS API Error:', err.message);
