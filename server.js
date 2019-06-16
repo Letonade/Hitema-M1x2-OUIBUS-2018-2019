@@ -116,6 +116,10 @@ const fakeForecast = {
   },
 };
 
+/*--------AREA--------
+
+Pour les stops:
+___________________________________________
 const ouibus = require('ouibus');
 const OUIBUS_API_KEY = "Token 4-SSgAE5flA_cP8pVY6oUA";
 const OUIBUS_BASE_URL = "https://api.idbus.com/v1";
@@ -129,6 +133,32 @@ fetch(url,{ method: 'get',
 }).catch((err) => {
   console.error('OUIBUS API Error:', err.message);
 });
+___________________________________________
+
+Pour les search:
+___________________________________________
+const ouibus = require('ouibus');
+const OUIBUS_API_KEY = "Token 4-SSgAE5flA_cP8pVY6oUA";
+const OUIBUS_BASE_URL = "https://api.idbus.com/v1";
+const url = `${OUIBUS_BASE_URL}/search`;
+
+const params = new URLSearchParams();
+params.append('origin_id', 1);
+params.append('destination_id', 5);
+params.append('date', "2019-09-01");
+
+fetch(url,{ method: 'post', 
+            headers: {'Authorization': OUIBUS_API_KEY},
+            body: params
+}).then((resp) => {
+  console.log("resp.json(): ");
+  console.log(resp.json());
+}).catch((err) => {
+  console.error('OUIBUS API Error:', err.message);
+});
+___________________________________________
+--------AREA--------*/
+
 
 /**
  * Generates a fake forecast in case the weather API is not available.
