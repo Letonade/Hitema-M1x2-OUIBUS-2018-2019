@@ -261,6 +261,51 @@ function loadLocationList() {
  * renders the initial data.
  */
 function init() {
+  /*Mon code*/
+
+  var map = L.map('map', {
+    center: [[40.775,-73.972]],
+    scrollWheelZoom: false,
+    inertia: true,
+    inertiaDeceleration: 2000
+  });
+  map.setView([40.775,-73.972], 15);
+
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>',
+    maxZoom: 15,
+    id: 'superpikar.n28afi10',
+    accessToken: 'pk.eyJ1IjoiZGFya2FiIiwiYSI6ImNqd3VueXl3dzAyYW00OXBuaXQ5bGZ2MzkifQ.AZUSWLccliPlhNMClrwW5w'
+  }).addTo(map);
+
+
+
+  $(document).ready(function() {
+        map.locate({setView: true, maxZoom: 15});
+        var data = getForecastFromNetwork(coor);
+        console.log(data);
+      }
+  );
+  var coor = "";
+  function onLocationFound(e) {
+    var radius = e.accuracy / 2;
+    coor = e.latlng;
+    L.marker(e.latlng).addTo(map)
+        .on('click', function(){
+          confirm("Ton emplacement");
+        });
+    //.bindPopup("You are within " + radius + " meters from this point").openPopup();
+    L.circle(e.latlng, radius).addTo(map);
+  }
+
+  map.on('locationfound', onLocationFound);
+
+  function onLocationError(e) {
+    alert(e.message);
+  }
+  map.on('locationerror', onLocationError);
+
+
   // Get the location list, and update the UI.
   weatherApp.selectedLocations = loadLocationList();
   updateData();

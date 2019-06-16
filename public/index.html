@@ -74,17 +74,6 @@
       <div class="uk-panel uk-panel-box uk-panel-box-secondary uk-panel-header">
         <h3 class="uk-panel-title">Leaflet Geolocation Simple</h3>
         <div id="map"></div>
-        <button id="locate-position" class="uk-button uk-button-success">x</button>
-
-        <button class="uk-button" data-uk-modal="{target:'#nodal'}">Show modal</button>
-        <!-- This is the modal -->
-        <div id="modal" class="uk-modal">
-          <div class="uk-modal-dialog">
-            <a class="uk-modal-close uk-close"></a>
-            Modal Title
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -110,44 +99,8 @@
     }
   </script>
   <script>
-    var map = L.map('map', {
-      center: [[40.775,-73.972]],
-      scrollWheelZoom: false,
-      inertia: true,
-      inertiaDeceleration: 2000
-    });
-    map.setView([40.775,-73.972], 15);
-
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://mapbox.com">Mapbox</a>',
-      maxZoom: 15,
-      id: 'superpikar.n28afi10',
-      accessToken: 'pk.eyJ1IjoiZGFya2FiIiwiYSI6ImNqd3VueXl3dzAyYW00OXBuaXQ5bGZ2MzkifQ.AZUSWLccliPlhNMClrwW5w'
-    }).addTo(map);
 
 
-
-    $(document).ready(function() {
-              map.locate({setView: true, maxZoom: 15});
-            }
-    );
-
-    function onLocationFound(e) {
-      var radius = e.accuracy / 2;
-      L.marker(e.latlng).addTo(map)
-              .on('click', function(){
-                confirm("are you sure?");
-              });
-      //.bindPopup("You are within " + radius + " meters from this point").openPopup();
-      L.circle(e.latlng, radius).addTo(map);
-    }
-
-    map.on('locationfound', onLocationFound);
-
-    function onLocationError(e) {
-      alert(e.message);
-    }
-    map.on('locationerror', onLocationError);
   </script>
 
 

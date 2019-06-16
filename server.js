@@ -123,7 +123,7 @@ ___________________________________________
 const ouibus = require('ouibus');
 const OUIBUS_API_KEY = "Token 4-SSgAE5flA_cP8pVY6oUA";
 const OUIBUS_BASE_URL = "https://api.idbus.com/v1";
-const url = `${OUIBUS_BASE_URL}/stops`;
+const url = `${OUIBUS_BASE_URL}/search`;
 //console.log(url);
 
 fetch(url,{ method: 'get',
