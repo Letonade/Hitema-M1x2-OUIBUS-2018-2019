@@ -1,267 +1,69 @@
-/*
- * @license
- * Your First PWA Codelab (https://g.co/codelabs/pwa)
- * Copyright 2019 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License
- */
-'use strict';
+ 'use strict';
 
-const weatherApp = {
-  selectedLocations: {},
-  addDialogContainer: document.getElementById('addDialogContainer'),
-};
-
-/**
- * Toggles the visibility of the add location dialog box.
- */
-function toggleAddDialog() {
-  weatherApp.addDialogContainer.classList.toggle('visible');
-}
-
-/**
- * Event handler for butDialogAdd, adds the selected location to the list.
- */
-function addLocation() {
-  // Hide the dialog
-  toggleAddDialog();
-  // Get the selected city
-  const select = document.getElementById('selectCityToAdd');
-  const selected = select.options[select.selectedIndex];
-  const geo = selected.value;
-  const label = selected.textContent;
-  const location = {label: label, geo: geo};
-  // Create a new card & get the weather data from the server
-  const card = getForecastCard(location);
-  getForecastFromNetwork(geo).then((forecast) => {
-    renderForecast(card, forecast);
-  });
-  // Save the updated list of selected cities.
-  weatherApp.selectedLocations[geo] = location;
-  saveLocationList(weatherApp.selectedLocations);
-}
-
-/**
- * Event handler for .remove-city, removes a location from the list.
- *
- * @param {Event} evt
- */
-function removeLocation(evt) {
-  const parent = evt.srcElement.parentElement;
-  parent.setAttribute('hidden', true);
-  if (weatherApp.selectedLocations[parent.id]) {
-    delete weatherApp.selectedLocations[parent.id];
-    saveLocationList(weatherApp.selectedLocations);
-  }
-}
-
-/**
- * Renders the forecast data into the card element.
- *
- * @param {Element} card The card element to update.
- * @param {Object} data Weather forecast data to update the element with.
- */
-function renderForecast(card, data) {
-  if (!data) {
-    // There's no data, skip the update.
-    return;
-  }
-
-  // Find out when the element was last updated.
-  const cardLastUpdatedElem = card.querySelector('.card-last-updated');
-  const cardLastUpdated = cardLastUpdatedElem.textContent;
-  const lastUpdated = parseInt(cardLastUpdated);
-
-  // If the data on the element is newer, skip the update.
-  if (lastUpdated >= data.currently.time) {
-    return;
-  }
-  cardLastUpdatedElem.textContent = data.currently.time;
-
-  // Render the forecast data into the card.
-  card.querySelector('.description').textContent = data.currently.summary;
-  const forecastFrom = luxon.DateTime
-      .fromSeconds(data.currently.time)
-      .setZone(data.timezone)
-      .toFormat('DDDD t');
-  card.querySelector('.date').textContent = forecastFrom;
-  card.querySelector('.current .icon')
-      .className = `icon ${data.currently.icon}`;
-  card.querySelector('.current .temperature .value')
-      .textContent = Math.round(data.currently.temperature);
-  card.querySelector('.current .humidity .value')
-      .textContent = Math.round(data.currently.humidity * 100);
-  card.querySelector('.current .wind .value')
-      .textContent = Math.round(data.currently.windSpeed);
-  card.querySelector('.current .wind .direction')
-      .textContent = Math.round(data.currently.windBearing);
-  const sunrise = luxon.DateTime
-      .fromSeconds(data.daily.data[0].sunriseTime)
-      .setZone(data.timezone)
-      .toFormat('t');
-  card.querySelector('.current .sunrise .value').textContent = sunrise;
-  const sunset = luxon.DateTime
-      .fromSeconds(data.daily.data[0].sunsetTime)
-      .setZone(data.timezone)
-      .toFormat('t');
-  card.querySelector('.current .sunset .value').textContent = sunset;
-
-  // Render the next 7 days.
-  const futureTiles = card.querySelectorAll('.future .oneday');
-  futureTiles.forEach((tile, index) => {
-    const forecast = data.daily.data[index + 1];
-    const forecastFor = luxon.DateTime
-        .fromSeconds(forecast.time)
-        .setZone(data.timezone)
-        .toFormat('ccc');
-    tile.querySelector('.date').textContent = forecastFor;
-    tile.querySelector('.icon').className = `icon ${forecast.icon}`;
-    tile.querySelector('.temp-high .value')
-        .textContent = Math.round(forecast.temperatureHigh);
-    tile.querySelector('.temp-low .value')
-        .textContent = Math.round(forecast.temperatureLow);
-  });
-
-  // If the loading spinner is still visible, remove it.
-  const spinner = card.querySelector('.card-spinner');
-  if (spinner) {
-    card.removeChild(spinner);
-  }
-}
-
-/**
- * Get's the latest forecast data from the network.
- *
- * @param {string} coords Location object to.
- * @return {Object} The weather forecast, if the request fails, return null.
- */
-function getForecastFromNetwork(coords) {
-  return fetch(`/forecast/${coords}`)
-      .then((response) => {
+ function getForecastFromNetwork() {
+  return fetch(`/forecast/`)
+  .then((response) => {
+        //response.json().then((res)=> console.log(res));
+        // console.log("Dans getForecastFromNetwork !");
+        //console.log(response.json().then((res)=>(res)));
         return response.json();
       })
-      .catch(() => {
-        return null;
-      });
+  .catch((err) => {
+    console.error('FETCH Error:', err.message);
+    return null;
+  });
 }
 
-/**
- * Get's the cached forecast data from the caches object.
- *
- * @param {string} coords Location object to.
- * @return {Object} The weather forecast, if the request fails, return null.
- */
-function getForecastFromCache(coords) {
+ function getForecastSearchFromNetwork() {
+  return fetch(`/forecastSearch/`)
+  .then((response) => {
+        //response.json().then((res)=> console.log(res));
+        // console.log("Dans getForecastFromNetwork !");
+        //console.log(response.json().then((res)=>(res)));
+        return response.json();
+      })
+  .catch((err) => {
+    console.error('FETCH Error:', err.message);
+    return null;
+  });
+}
+
+ function getForecastFromCache(coords) {
   // CODELAB: Add code to get weather forecast from the caches object.
   if (!('caches' in window)) {
-  return null;
+    return null;
   }
   const url = `${window.location.origin}/forecast/${coords}`;
   return caches.match(url)
-      .then((response) => {
-        if (response) {
-          return response.json();
-        }
-        return null;
-      })
-      .catch((err) => {
-        console.error('Error getting data from cache', err);
-        return null;
-      });
-  }
-
-/**
- * Get's the HTML element for the weather forecast, or clones the template
- * and adds it to the DOM if we're adding a new item.
- *
- * @param {Object} location Location object
- * @return {Element} The element for the weather forecast.
- */
-function getForecastCard(location) {
-  const id = location.geo;
-  const card = document.getElementById(id);
-  if (card) {
-    return card;
-  }
-  const newCard = document.getElementById('weather-template').cloneNode(true);
-  newCard.querySelector('.location').textContent = location.label;
-  newCard.setAttribute('id', id);
-  newCard.querySelector('.remove-city')
-      .addEventListener('click', removeLocation);
-  document.querySelector('main').appendChild(newCard);
-  newCard.removeAttribute('hidden');
-  return newCard;
-}
-
-/**
- * Gets the latest weather forecast data and updates each card with the
- * new data.
- */
-function updateData() {
-  Object.keys(weatherApp.selectedLocations).forEach((key) => {
-    const location = weatherApp.selectedLocations[key];
-    const card = getForecastCard(location);
-    // CODELAB: Add code to call getForecastFromCache
-    getForecastFromCache(location.geo)
-    .then((forecast) => {
-      renderForecast(card, forecast);
-    });
-    // Get the forecast data from the network.
-    getForecastFromNetwork(location.geo)
-    .then((forecast) => {
-      renderForecast(card, forecast);
-    });
+  .then((response) => {
+    if (response) {
+      return response.json();
+    }
+    return null;
+  })
+  .catch((err) => {
+    console.error('Error getting data from cache', err);
+    return null;
   });
 }
 
-/**
- * Saves the list of locations.
- *
- * @param {Object} locations The list of locations to save.
- */
-function saveLocationList(locations) {
-  const data = JSON.stringify(locations);
-  localStorage.setItem('locationList', data);
+ function updateData() {
+  
 }
 
-/**
- * Loads the list of saved location.
- *
- * @return {Array}
- */
-function loadLocationList() {
-  let locations = localStorage.getItem('locationList');
-  if (locations) {
-    try {
-      locations = JSON.parse(locations);
-    } catch (ex) {
-      locations = {};
-    }
-  }
-  if (!locations || Object.keys(locations).length === 0) {
-    const key = '40.7720232,-73.9732319';
-    locations = {};
-    locations[key] = {label: 'New York City', geo: '40.7720232,-73.9732319'};
-  }
-  return locations;
-}
+ function init() {
+  // Update the UI.
+  updateData();
+  var stops = getForecastFromNetwork();
+  //stops = stops.then((res) => console.log(res.json()))
+  //.catch((rej) => console.log(rej));
+  //stops = JSON.stringify(stops);
+  /*Leton code*/
+  document.getElementById("TEST").innerHTML="dsf";
+  document.getElementById("TEST").innerHTML=Object.values(stops);
 
-/**
- * Initialize the app, gets the list of locations from local storage, then
- * renders the initial data.
- */
-function init() {
-  /*Mon code*/
+
+  /*Aliak code*/
 
   var map = L.map('map', {
     center: [[40.775,-73.972]],
@@ -278,22 +80,31 @@ function init() {
     accessToken: 'pk.eyJ1IjoiZGFya2FiIiwiYSI6ImNqd3VueXl3dzAyYW00OXBuaXQ5bGZ2MzkifQ.AZUSWLccliPlhNMClrwW5w'
   }).addTo(map);
 
-
-
   $(document).ready(function() {
-        map.locate({setView: true, maxZoom: 15});
-        var data = getForecastFromNetwork(coor);
-        console.log(data);
-      }
-  );
+    map.locate({setView: true, maxZoom: 15});
+    getForecastFromNetwork()
+    .then(res => {
+      res.stops.forEach(
+        function (elem) {
+          L.marker({lat : elem.latitude, lng: elem.longitude}).addTo(map)
+          .on('click', function(){
+            confirm(elem.short_name);
+          });
+        })
+    })
+    .catch(err => console.error(err))
+
+
+        // console.log(data);
+  });
   var coor = "";
   function onLocationFound(e) {
     var radius = e.accuracy / 2;
     coor = e.latlng;
     L.marker(e.latlng).addTo(map)
-        .on('click', function(){
-          confirm("Ton emplacement");
-        });
+    .on('click', function(){
+      confirm("Ton emplacement");
+    });
     //.bindPopup("You are within " + radius + " meters from this point").openPopup();
     L.circle(e.latlng, radius).addTo(map);
   }
@@ -305,16 +116,9 @@ function init() {
   }
   map.on('locationerror', onLocationError);
 
+  getForecastSearchFromNetwork()
+    .then((res) => console.log(res))
 
-  // Get the location list, and update the UI.
-  weatherApp.selectedLocations = loadLocationList();
-  updateData();
-
-  // Set up the event handlers for all of the buttons.
-  document.getElementById('butRefresh').addEventListener('click', updateData);
-  document.getElementById('butAdd').addEventListener('click', toggleAddDialog);
-  document.getElementById('butDialogCancel').addEventListener('click', toggleAddDialog);
-  document.getElementById('butDialogAdd').addEventListener('click', addLocation);
 }
 
 init();
